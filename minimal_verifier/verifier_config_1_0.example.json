@@ -1,0 +1,55 @@
+{
+  "client_id": "verifier.example.com",
+  "base_url": "https://verifier.example.com",
+  "port": 8080,
+  "signing_key": "signing.key",
+  "signing_cert": "signing.cert",
+  "encryption_key": "enc_jwk.json",
+  "vical_dir": "trusted_iacas",
+  "dcql_query": {
+    "credentials": [
+      {
+        "id": "photoid",
+        "format": "mso_mdoc",
+        "meta": {
+          "doctype_value": "org.iso.23220.photoid.1"
+        },
+        "claims": [
+          {
+            "path": [
+              "org.iso.23220.1",
+              "age_over_18"
+            ],
+            "intent_to_retain": false
+          }
+        ]
+      }
+    ]
+  },
+  "presentation_definition": {
+    "id": "age-verification",
+    "input_descriptors": [
+      {
+        "id": "org.iso.23220.photoid.1",
+        "format": {
+          "mso_mdoc": {
+            "alg": [
+              "ES256"
+            ]
+          }
+        },
+        "constraints": {
+          "limit_disclosure": "required",
+          "fields": [
+            {
+              "path": [
+                "$['org.iso.23220.1']['age_over_18']"
+              ],
+              "intent_to_retain": false
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

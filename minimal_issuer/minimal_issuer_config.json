@@ -1,0 +1,24 @@
+{
+  "base_url": "http://localhost:8090",
+  "port": 8090,
+  "issuer_name": "Minimal Issuer",
+  "country": "NZ",
+  "credential_configuration_id": "photoid",
+  "credential_name": "Photo ID",
+  "doctype": "org.iso.23220.photoid.1",
+  "namespace": "org.iso.23220.1",
+  "validity_days": 365,
+  "keys_dir": "keys",
+  "claims": {
+    "family_name": "Citizen",
+    "given_name": "Test",
+    "birth_date": {
+      "full-date": "1990-01-01"
+    },
+    "age_over_18": true,
+    "issuing_country": "NZ",
+    "portrait": {
+      "file": "portrait.jpg"
+    }
+  }
+}
