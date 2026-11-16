@@ -3,13 +3,21 @@
 Single-file ISO mdoc wallet: the holder-side counterpart of `minimal_issuer/` and
 `minimal_verifier/minimal_verifier_1_0.py`.
 
-- **`minimal_wallet.py`** (~430 lines)
+- **`minimal_wallet_1_0.py`** (~430 lines) — OID4VP **1.0** (DCQL, prefixed `client_id`).
+- **`minimal_wallet_18013_7.py`** — same `issue`/`list`/storage, but `present` speaks the
+  **ISO 18013-7 / pre-1.0 OID4VP** profile for verifiers that aren't on 1.0 (e.g.
+  `nzverifier.1i.nz`, current MATTR verifiers): `mdoc-openid4vp://`, **bare `client_id` +
+  separate `client_id_scheme`**, `presentation_definition` (not DCQL), the ISO 18013-7
+  handover transcript with `mdoc_generated_nonce` in the JWE `apu`, and a `vp_token` string +
+  `presentation_submission`. Use this one if you hit `❌ Unsupported client_id_scheme` (or the
+  older `Unsupported client identifier prefix`) when presenting to a pre-1.0 verifier with
+  `minimal_wallet_1_0.py`.
 
-| Command | Protocol |
-|---|---|
-| `issue <offer link>` | OID4VCI 1.0, pre-authorized code flow |
-| `present <openid4vp link>` | OID4VP 1.0, DCQL, `mso_mdoc`, signed request, `direct_post.jwt` or `direct_post` |
-| `list` | Stored credentials |
+| Command | `minimal_wallet_1_0.py` (1.0) | `minimal_wallet_18013_7.py` (18013-7) |
+|---|---|---|
+| `issue <offer link>` | OID4VCI 1.0, pre-authorized code flow | same |
+| `present <link>` | OID4VP 1.0, DCQL, `mso_mdoc`, `direct_post.jwt`/`direct_post`, OpenID4VPHandover | pre-1.0, `presentation_definition`, 18013-7 handover, `apu`=mdoc_nonce |
+| `list` | Stored credentials | same |
 
 Deliberately left out: draft protocol versions, the authorization-code flow, transaction codes,
 DPoP, batch and deferred issuance, encrypted credential responses, SD-JWT, unsigned requests,
@@ -25,14 +33,14 @@ pip install cryptography cbor2 pyjwt jwcrypto
 
 ```bash
 # 1. Get a credential (e.g. from minimal_issuer: open its page, or GET /new-offer)
-python minimal_wallet.py issue
+python minimal_wallet_1_0.py issue
 Paste credential offer link: openid-credential-offer://?credential_offer_uri=...
 
 # 2. See what's stored
-python minimal_wallet.py list
+python minimal_wallet_1_0.py list
 
 # 3. Present to a verifier (e.g. the minimal_verifier_1_0 page's "Open in Wallet" link)
-python minimal_wallet.py present
+python minimal_wallet_1_0.py present
 Paste openid4vp link: openid4vp://?client_id=...&request_uri=...
 ```
 
@@ -42,7 +50,7 @@ links contain `&`, and an unquoted `&` makes the shell run the first half in the
 drop the rest, so the wallet only sees the `client_id` part:
 
 ```bash
-python minimal_wallet.py present 'openid4vp://?client_id=...&request_uri=...'
+python minimal_wallet_1_0.py present 'openid4vp://?client_id=...&request_uri=...'
 ```
 
 `present` shows who is asking, for which elements, which credential and issuer, and where the
@@ -62,7 +70,7 @@ Some issuers nevertheless reject a proof without `iss` (typically `invalid_proof
 `iss`, which is then spec-correct because the access is no longer anonymous.
 
 ```bash
-python minimal_wallet.py --client-id my-wallet issue
+python minimal_wallet_1_0.py --client-id my-wallet issue
 ```
 
 If an issuer offers no nonce endpoint and returns no `c_nonce`, the proof is sent without a
